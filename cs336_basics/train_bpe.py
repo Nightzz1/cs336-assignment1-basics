@@ -97,7 +97,7 @@ def merge_pair(
 
     return tuple(result)
 
-def my_train_bpe(
+def train_bpe(
     input_path: str,
     vocab_size: int,
     special_tokens: list[str]
@@ -230,7 +230,7 @@ if __name__ == "__main__":
     file_name = "tests/fixtures/corpus.en"
     vocab_size = 500
     special_tokens = ["<|endoftext|>"]
-    vocab, merges = my_train_bpe(file_name, vocab_size, special_tokens)
+    vocab, merges = train_bpe(file_name, vocab_size, special_tokens)
     print("Vocabulary:")
     for index, token in vocab.items():
         print(f"{index}: {token.decode('utf-8', errors='replace')}")
