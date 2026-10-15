@@ -1,3 +1,4 @@
+import os, json
 import regex as re
 import multiprocessing as mp
 from collections import Counter, defaultdict
@@ -227,13 +228,27 @@ def train_bpe(
 
 
 if __name__ == "__main__":
-    file_name = "tests/fixtures/corpus.en"
+    file_dir = "tests/fixtures/"
+    file_name = "corpus.en"
+    file_path = os.path.join(file_dir, file_name)
     vocab_size = 500
     special_tokens = ["<|endoftext|>"]
-    vocab, merges = train_bpe(file_name, vocab_size, special_tokens)
-    print("Vocabulary:")
-    for index, token in vocab.items():
-        print(f"{index}: {token.decode('utf-8', errors='replace')}")
-    print("Merges:")
-    for i, (a, b) in enumerate(merges):
-        print(f"{i}: {a.decode('utf-8', errors='replace')} + {b.decode('utf-8', errors='replace')} -> {b''.join([a, b]).decode('utf-8', errors='replace')}")
+    vocab, merges = train_bpe(file_path, vocab_size, special_tokens)
+
+    # Output the vocab and merges to json files
+    output_dir = "data/"
+    vocab_name = "vocab.json"
+    vocab_path = os.path.join(output_dir, vocab_name)
+    merges_name = "merges.json"
+    merges_path = os.path.join(output_dir, merges_name)
+
+    # dict[int, bytes] -> dict[str, str]
+    vocab_json = { str(token_id): token.hex() for token_id, token in vocab.items() }
+    # list[tuple[bytes, bytes]] -> list[list[str]]
+    merges_json = [ [left.hex(), right.hex()] for left, right in merges]
+
+    with open(vocab_path, "w", encoding="utf-8") as f:
+        json.dump(vocab_json, f, indent=2)
+
+    with open(merges_path, "w", encoding="utf-8") as f:
+        json.dump(merges_json, f, indent=2)
