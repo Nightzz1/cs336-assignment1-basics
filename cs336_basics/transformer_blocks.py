@@ -9,6 +9,9 @@ def softmax(x: torch.Tensor, dim: int) -> torch.Tensor:
     x_sum = torch.sum(x_exp, dim=dim, keepdim=True)
     return x_exp / x_sum
 
+def silu(x: torch.Tensor) -> torch.Tensor:
+    return x * sigmoid(x)
+
 def scaled_dot_product_attention(q: torch.Tensor, k: torch.Tensor, v: torch.Tensor, mask: torch.Tensor | None = None) -> torch.Tensor:
     d_k = q.size(-1)
     # use torch.einsum for matrix multiplication and transpose
@@ -81,7 +84,7 @@ class SwiGLUFFNLayer(torch.nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x1 = self.w1(x)
-        x2 = x1 * sigmoid(x1)
+        x2 = silu(x1)
         x3 = self.w3(x)
         x4 = x2 * x3
         return self.w2(x4)
