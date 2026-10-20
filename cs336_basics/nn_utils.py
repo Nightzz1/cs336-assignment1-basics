@@ -1,4 +1,22 @@
+"""Element-wise activations, softmax, and cross-entropy loss."""
+
 import torch
+
+
+def sigmoid(x: torch.Tensor) -> torch.Tensor:
+    return 1 / (1 + torch.exp(-x))
+
+
+def softmax(x: torch.Tensor, dim: int) -> torch.Tensor:
+    x_max = torch.max(x, dim=dim, keepdim=True).values
+    x_exp = torch.exp(x - x_max)
+    x_sum = torch.sum(x_exp, dim=dim, keepdim=True)
+    return x_exp / x_sum
+
+
+def silu(x: torch.Tensor) -> torch.Tensor:
+    return x * torch.sigmoid(x)
+
 
 def cross_entropy_loss(logits: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
     # implement the cross entropy loss function here from scratch
